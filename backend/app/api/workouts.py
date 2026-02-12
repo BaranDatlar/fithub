@@ -16,6 +16,7 @@ router = APIRouter(prefix="/api/workouts", tags=["Workouts"])
 
 # --- Plans ---
 
+
 @router.post("/plans", response_model=WorkoutPlanResponse, status_code=201)
 async def create_plan(data: WorkoutPlanCreate):
     return await WorkoutService.create_plan(data)
@@ -44,6 +45,7 @@ async def update_plan(plan_id: str, data: WorkoutPlanUpdate):
 
 # --- Assignment ---
 
+
 @router.post("/assign")
 async def assign_plan(data: WorkoutAssign):
     try:
@@ -58,6 +60,7 @@ async def get_member_workouts(member_id: str):
 
 
 # --- Logging ---
+
 
 @router.post("/log", response_model=WorkoutLogResponse, status_code=201)
 async def log_workout(data: WorkoutLogCreate):

@@ -20,7 +20,6 @@ COLLECTION = "classes"
 
 
 class ClassService:
-
     @staticmethod
     async def create(data: ClassCreate) -> ClassResponse:
         db = get_database()
@@ -191,7 +190,9 @@ class ClassService:
             key=class_id,
         )
 
-        logger.info("class_booked", class_id=class_id, member_id=member_id, spots_left=remaining)
+        logger.info(
+            "class_booked", class_id=class_id, member_id=member_id, spots_left=remaining
+        )
         return {"message": "Booked successfully", "spots_left": remaining}
 
     @staticmethod
@@ -233,9 +234,11 @@ class ClassService:
         if not cls.get("participants"):
             return []
 
-        members = await db["members"].find(
-            {"_id": {"$in": cls["participants"]}, "is_deleted": {"$ne": True}}
-        ).to_list(length=100)
+        members = (
+            await db["members"]
+            .find({"_id": {"$in": cls["participants"]}, "is_deleted": {"$ne": True}})
+            .to_list(length=100)
+        )
 
         return [
             {

@@ -23,7 +23,6 @@ ASSIGNMENTS_COLLECTION = "workout_assignments"
 
 
 class WorkoutService:
-
     # --- Plans ---
 
     @staticmethod
@@ -70,7 +69,9 @@ class WorkoutService:
         )
 
     @staticmethod
-    async def update_plan(plan_id: str, data: WorkoutPlanUpdate) -> WorkoutPlanResponse | None:
+    async def update_plan(
+        plan_id: str, data: WorkoutPlanUpdate
+    ) -> WorkoutPlanResponse | None:
         db = get_database()
         update_data = data.model_dump(exclude_none=True)
         if not update_data:
@@ -129,24 +130,30 @@ class WorkoutService:
             key=data.member_id,
         )
 
-        logger.info("workout_plan_assigned", member_id=data.member_id, plan_id=data.plan_id)
+        logger.info(
+            "workout_plan_assigned", member_id=data.member_id, plan_id=data.plan_id
+        )
         return {"message": "Plan assigned successfully", "plan_name": plan["name"]}
 
     @staticmethod
     async def get_member_workouts(member_id: str) -> list[WorkoutPlanResponse]:
         db = get_database()
 
-        assignments = await db[ASSIGNMENTS_COLLECTION].find(
-            {"member_id": ObjectId(member_id), "status": "active"}
-        ).to_list(length=50)
+        assignments = (
+            await db[ASSIGNMENTS_COLLECTION]
+            .find({"member_id": ObjectId(member_id), "status": "active"})
+            .to_list(length=50)
+        )
 
         plan_ids = [a["plan_id"] for a in assignments]
         if not plan_ids:
             return []
 
-        plans = await db[PLANS_COLLECTION].find(
-            {"_id": {"$in": plan_ids}}
-        ).to_list(length=50)
+        plans = (
+            await db[PLANS_COLLECTION]
+            .find({"_id": {"$in": plan_ids}})
+            .to_list(length=50)
+        )
 
         return [WorkoutPlanResponse.from_mongo(p) for p in plans]
 

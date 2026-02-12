@@ -39,6 +39,7 @@ class Profile(BaseModel):
 
 # --- Request Schemas ---
 
+
 class MemberCreate(BaseModel):
     first_name: str = Field(..., min_length=1, max_length=100)
     last_name: str = Field(..., min_length=1, max_length=100)
@@ -58,6 +59,7 @@ class MemberUpdate(BaseModel):
 
 
 # --- Response Schemas ---
+
 
 class MemberResponse(BaseModel):
     id: str

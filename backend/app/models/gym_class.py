@@ -27,6 +27,7 @@ class Schedule(BaseModel):
 
 # --- Request Schemas ---
 
+
 class ClassCreate(BaseModel):
     name: str = Field(..., min_length=1, max_length=200)
     description: str = ""
@@ -49,6 +50,7 @@ class ClassUpdate(BaseModel):
 
 
 # --- Response Schemas ---
+
 
 class ClassResponse(BaseModel):
     id: str

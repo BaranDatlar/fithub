@@ -18,7 +18,6 @@ PLAN_PRICES = {"basic": 29.99, "premium": 49.99, "pt": 89.99}
 
 
 class AnalyticsService:
-
     @staticmethod
     async def get_overview() -> OverviewAnalytics:
         cache_key = "analytics:overview"
@@ -31,7 +30,9 @@ class AnalyticsService:
         month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
         week_start = now - timedelta(days=now.weekday())
 
-        total_members = await db["members"].count_documents({"is_deleted": {"$ne": True}})
+        total_members = await db["members"].count_documents(
+            {"is_deleted": {"$ne": True}}
+        )
         active_members = await db["members"].count_documents(
             {"is_deleted": {"$ne": True}, "membership.status": "active"}
         )
@@ -48,9 +49,7 @@ class AnalyticsService:
             {"$match": {"status": {"$ne": "cancelled"}, "capacity": {"$gt": 0}}},
             {
                 "$project": {
-                    "attendance_rate": {
-                        "$divide": ["$current_bookings", "$capacity"]
-                    }
+                    "attendance_rate": {"$divide": ["$current_bookings", "$capacity"]}
                 }
             },
             {"$group": {"_id": None, "avg": {"$avg": "$attendance_rate"}}},
@@ -84,7 +83,9 @@ class AnalyticsService:
             ai_sessions_this_month=ai_sessions,
         )
 
-        await RedisService.set_cached(cache_key, result.model_dump(), settings.dashboard_cache_ttl)
+        await RedisService.set_cached(
+            cache_key, result.model_dump(), settings.dashboard_cache_ttl
+        )
         return result
 
     @staticmethod
@@ -102,9 +103,15 @@ class AnalyticsService:
         base_filter = {"is_deleted": {"$ne": True}}
 
         total = await db["members"].count_documents(base_filter)
-        active = await db["members"].count_documents({**base_filter, "membership.status": "active"})
-        frozen = await db["members"].count_documents({**base_filter, "membership.status": "frozen"})
-        expired = await db["members"].count_documents({**base_filter, "membership.status": "expired"})
+        active = await db["members"].count_documents(
+            {**base_filter, "membership.status": "active"}
+        )
+        frozen = await db["members"].count_documents(
+            {**base_filter, "membership.status": "frozen"}
+        )
+        expired = await db["members"].count_documents(
+            {**base_filter, "membership.status": "expired"}
+        )
 
         # By plan
         plan_pipeline = [
@@ -118,10 +125,13 @@ class AnalyticsService:
             {**base_filter, "created_at": {"$gte": month_start}}
         )
         new_prev_month = await db["members"].count_documents(
-            {**base_filter, "created_at": {"$gte": prev_month_start, "$lt": month_start}}
+            {
+                **base_filter,
+                "created_at": {"$gte": prev_month_start, "$lt": month_start},
+            }
         )
-        growth_rate = (
-            round((new_this_month - new_prev_month) / max(new_prev_month, 1) * 100, 1)
+        growth_rate = round(
+            (new_this_month - new_prev_month) / max(new_prev_month, 1) * 100, 1
         )
 
         result = MemberAnalytics(
@@ -134,7 +144,9 @@ class AnalyticsService:
             growth_rate=growth_rate,
         )
 
-        await RedisService.set_cached(cache_key, result.model_dump(), settings.dashboard_cache_ttl)
+        await RedisService.set_cached(
+            cache_key, result.model_dump(), settings.dashboard_cache_ttl
+        )
         return result
 
     @staticmethod
@@ -188,7 +200,9 @@ class AnalyticsService:
             total_bookings=total_bookings,
         )
 
-        await RedisService.set_cached(cache_key, result.model_dump(), settings.dashboard_cache_ttl)
+        await RedisService.set_cached(
+            cache_key, result.model_dump(), settings.dashboard_cache_ttl
+        )
         return result
 
     @staticmethod
@@ -216,5 +230,7 @@ class AnalyticsService:
             estimated_monthly=round(estimated_monthly, 2),
         )
 
-        await RedisService.set_cached(cache_key, result.model_dump(), settings.dashboard_cache_ttl)
+        await RedisService.set_cached(
+            cache_key, result.model_dump(), settings.dashboard_cache_ttl
+        )
         return result

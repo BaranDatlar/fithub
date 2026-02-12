@@ -13,7 +13,6 @@ from app.models.member import (
 )
 from app.services.redis_service import RedisService
 from app.services.kafka_service import publish_event, TOPICS
-from app.config import settings
 
 logger = structlog.get_logger()
 
@@ -21,7 +20,6 @@ COLLECTION = "members"
 
 
 class MemberService:
-
     @staticmethod
     async def create(data: MemberCreate) -> MemberResponse:
         db = get_database()
@@ -53,7 +51,11 @@ class MemberService:
         await publish_event(
             TOPICS["member_events"],
             "member.created",
-            {"member_id": str(result.inserted_id), "email": data.email, "plan": data.membership.plan.value},
+            {
+                "member_id": str(result.inserted_id),
+                "email": data.email,
+                "plan": data.membership.plan.value,
+            },
             key=str(result.inserted_id),
         )
 
@@ -97,7 +99,13 @@ class MemberService:
         total = await db[COLLECTION].count_documents(query)
         skip = (page - 1) * page_size
 
-        cursor = db[COLLECTION].find(query).sort("created_at", -1).skip(skip).limit(page_size)
+        cursor = (
+            db[COLLECTION]
+            .find(query)
+            .sort("created_at", -1)
+            .skip(skip)
+            .limit(page_size)
+        )
         docs = await cursor.to_list(length=page_size)
 
         return MemberListResponse(
@@ -186,7 +194,12 @@ class MemberService:
             {"$match": {"member_id": ObjectId(member_id)}},
             {"$unwind": "$exercises_completed"},
             {"$match": {"exercises_completed.form_score": {"$ne": None}}},
-            {"$group": {"_id": None, "avg_score": {"$avg": "$exercises_completed.form_score"}}},
+            {
+                "$group": {
+                    "_id": None,
+                    "avg_score": {"$avg": "$exercises_completed.form_score"},
+                }
+            },
         ]
         avg_result = await db["workout_logs"].aggregate(pipeline).to_list(1)
         avg_form_score = avg_result[0]["avg_score"] if avg_result else None

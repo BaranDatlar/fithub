@@ -33,6 +33,7 @@ class ExerciseLog(BaseModel):
 
 # --- Request Schemas ---
 
+
 class WorkoutPlanCreate(BaseModel):
     name: str = Field(..., min_length=1, max_length=200)
     description: str = ""
@@ -64,6 +65,7 @@ class WorkoutLogCreate(BaseModel):
 
 
 # --- Response Schemas ---
+
 
 class WorkoutPlanResponse(BaseModel):
     id: str
@@ -106,7 +108,9 @@ class WorkoutLogResponse(BaseModel):
             plan_id=str(doc["plan_id"]) if doc.get("plan_id") else None,
             completed_at=doc["completed_at"],
             duration_minutes=doc["duration_minutes"],
-            exercises_completed=[ExerciseLog(**e) for e in doc.get("exercises_completed", [])],
+            exercises_completed=[
+                ExerciseLog(**e) for e in doc.get("exercises_completed", [])
+            ],
             source=doc.get("source", "manual"),
         )
 

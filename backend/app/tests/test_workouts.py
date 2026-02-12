@@ -52,7 +52,6 @@ SAMPLE_LOG_DOC = {
 
 
 class TestWorkoutEndpoints:
-
     @pytest.mark.asyncio
     async def test_create_plan(self, client, mock_db):
         col = MagicMock()
@@ -61,17 +60,20 @@ class TestWorkoutEndpoints:
         col.insert_one = AsyncMock(return_value=insert_result)
         mock_db.__getitem__ = MagicMock(return_value=col)
 
-        response = await client.post("/api/workouts/plans", json={
-            "name": "Beginner Full Body",
-            "description": "Great for beginners",
-            "difficulty": "beginner",
-            "exercises": [
-                {"name": "Squat", "sets": 3, "reps": 12},
-                {"name": "Push-up", "sets": 3, "reps": 10},
-            ],
-            "estimated_duration_minutes": 45,
-            "created_by": "Coach Mike",
-        })
+        response = await client.post(
+            "/api/workouts/plans",
+            json={
+                "name": "Beginner Full Body",
+                "description": "Great for beginners",
+                "difficulty": "beginner",
+                "exercises": [
+                    {"name": "Squat", "sets": 3, "reps": 12},
+                    {"name": "Push-up", "sets": 3, "reps": 10},
+                ],
+                "estimated_duration_minutes": 45,
+                "created_by": "Coach Mike",
+            },
+        )
 
         assert response.status_code == 201
         assert response.json()["name"] == "Beginner Full Body"
@@ -119,27 +121,32 @@ class TestWorkoutEndpoints:
         col.insert_one = AsyncMock(return_value=insert_result)
         mock_db.__getitem__ = MagicMock(return_value=col)
 
-        response = await client.post("/api/workouts/log", json={
-            "member_id": "507f1f77bcf86cd799439011",
-            "plan_id": "507f1f77bcf86cd799439033",
-            "duration_minutes": 40,
-            "exercises_completed": [
-                {
-                    "exercise_name": "Squat",
-                    "sets_completed": 3,
-                    "reps_per_set": [12, 12, 10],
-                    "form_score": 85.0,
-                },
-            ],
-            "source": "manual",
-        })
+        response = await client.post(
+            "/api/workouts/log",
+            json={
+                "member_id": "507f1f77bcf86cd799439011",
+                "plan_id": "507f1f77bcf86cd799439033",
+                "duration_minutes": 40,
+                "exercises_completed": [
+                    {
+                        "exercise_name": "Squat",
+                        "sets_completed": 3,
+                        "reps_per_set": [12, 12, 10],
+                        "form_score": 85.0,
+                    },
+                ],
+                "source": "manual",
+            },
+        )
 
         assert response.status_code == 201
 
     @pytest.mark.asyncio
     async def test_assign_plan(self, client, mock_db):
         member_col = MagicMock()
-        member_col.find_one = AsyncMock(return_value={"_id": ObjectId("507f1f77bcf86cd799439011")})
+        member_col.find_one = AsyncMock(
+            return_value={"_id": ObjectId("507f1f77bcf86cd799439011")}
+        )
 
         plan_col = MagicMock()
         plan_col.find_one = AsyncMock(return_value=SAMPLE_PLAN_DOC)
@@ -158,10 +165,13 @@ class TestWorkoutEndpoints:
 
         mock_db.__getitem__ = MagicMock(side_effect=get_col)
 
-        response = await client.post("/api/workouts/assign", json={
-            "member_id": "507f1f77bcf86cd799439011",
-            "plan_id": "507f1f77bcf86cd799439033",
-        })
+        response = await client.post(
+            "/api/workouts/assign",
+            json={
+                "member_id": "507f1f77bcf86cd799439011",
+                "plan_id": "507f1f77bcf86cd799439033",
+            },
+        )
 
         assert response.status_code == 200
         assert "Plan assigned" in response.json()["message"]

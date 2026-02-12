@@ -36,9 +36,13 @@ async def stop_producer() -> None:
         logger.info("kafka_producer_stopped")
 
 
-async def publish_event(topic: str, event_type: str, data: dict, key: str | None = None) -> None:
+async def publish_event(
+    topic: str, event_type: str, data: dict, key: str | None = None
+) -> None:
     if _producer is None:
-        logger.warning("kafka_producer_not_available", topic=topic, event_type=event_type)
+        logger.warning(
+            "kafka_producer_not_available", topic=topic, event_type=event_type
+        )
         return
     event = {"event_type": event_type, **data}
     await _producer.send(topic, value=event, key=key)

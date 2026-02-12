@@ -27,7 +27,6 @@ SAMPLE_CLASS_DOC = {
 
 
 class TestClassEndpoints:
-
     @pytest.mark.asyncio
     async def test_create_class(self, client, mock_db):
         col = MagicMock()
@@ -36,20 +35,23 @@ class TestClassEndpoints:
         col.insert_one = AsyncMock(return_value=insert_result)
         mock_db.__getitem__ = MagicMock(return_value=col)
 
-        response = await client.post("/api/classes", json={
-            "name": "Morning Yoga",
-            "description": "Relaxing morning yoga session",
-            "instructor": "Sarah",
-            "category": "yoga",
-            "schedule": {
-                "day_of_week": 1,
-                "start_time": "09:00",
-                "end_time": "10:00",
-                "recurring": True,
+        response = await client.post(
+            "/api/classes",
+            json={
+                "name": "Morning Yoga",
+                "description": "Relaxing morning yoga session",
+                "instructor": "Sarah",
+                "category": "yoga",
+                "schedule": {
+                    "day_of_week": 1,
+                    "start_time": "09:00",
+                    "end_time": "10:00",
+                    "recurring": True,
+                },
+                "capacity": 20,
+                "location": "Studio A",
             },
-            "capacity": 20,
-            "location": "Studio A",
-        })
+        )
 
         assert response.status_code == 201
         data = response.json()
@@ -97,10 +99,12 @@ class TestClassEndpoints:
         col = MagicMock()
         # First call: capacity check (find_one for class)
         # Second call: check if already booked
-        col.find_one = AsyncMock(side_effect=[
-            SAMPLE_CLASS_DOC,  # class exists for capacity init
-            None,               # member not already booked
-        ])
+        col.find_one = AsyncMock(
+            side_effect=[
+                SAMPLE_CLASS_DOC,  # class exists for capacity init
+                None,  # member not already booked
+            ]
+        )
         col.update_one = AsyncMock()
         mock_db.__getitem__ = MagicMock(return_value=col)
 

@@ -1,5 +1,5 @@
 from datetime import datetime
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from bson import ObjectId
@@ -31,7 +31,6 @@ SAMPLE_MEMBER_DOC = {
 
 
 class TestMemberEndpoints:
-
     @pytest.mark.asyncio
     async def test_create_member(self, client, mock_db):
         col = MagicMock()
@@ -41,12 +40,15 @@ class TestMemberEndpoints:
         col.insert_one = AsyncMock(return_value=insert_result)
         mock_db.__getitem__ = MagicMock(return_value=col)
 
-        response = await client.post("/api/members", json={
-            "first_name": "John",
-            "last_name": "Doe",
-            "email": "john@example.com",
-            "phone": "+31612345678",
-        })
+        response = await client.post(
+            "/api/members",
+            json={
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john@example.com",
+                "phone": "+31612345678",
+            },
+        )
 
         assert response.status_code == 201
         data = response.json()
@@ -59,11 +61,14 @@ class TestMemberEndpoints:
         col.find_one = AsyncMock(return_value=SAMPLE_MEMBER_DOC)  # exists
         mock_db.__getitem__ = MagicMock(return_value=col)
 
-        response = await client.post("/api/members", json={
-            "first_name": "Jane",
-            "last_name": "Doe",
-            "email": "john@example.com",
-        })
+        response = await client.post(
+            "/api/members",
+            json={
+                "first_name": "Jane",
+                "last_name": "Doe",
+                "email": "john@example.com",
+            },
+        )
 
         assert response.status_code == 409
 
