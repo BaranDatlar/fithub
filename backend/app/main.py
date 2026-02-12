@@ -6,7 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.analytics import router as analytics_router
 from app.api.classes import router as classes_router
+from app.api.exercises import router as exercises_router
 from app.api.members import router as members_router
+from app.api.websocket import router as ws_router
 from app.api.workouts import router as workouts_router
 from app.config import settings
 from app.db.mongodb import connect_mongodb, close_mongodb
@@ -93,3 +95,5 @@ app.include_router(members_router)
 app.include_router(classes_router)
 app.include_router(workouts_router)
 app.include_router(analytics_router)
+app.include_router(exercises_router)
+app.include_router(ws_router)

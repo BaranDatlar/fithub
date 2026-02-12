@@ -40,6 +40,13 @@ export const workoutApi = {
   getMemberLogs: (memberId, params) => api.get(`/workouts/member/${memberId}/logs`, { params }),
 }
 
+// --- Exercises ---
+export const exerciseApi = {
+  list: () => api.get('/exercises'),
+  listSessions: (params) => api.get('/exercises/sessions', { params }),
+  getSession: (id) => api.get(`/exercises/sessions/${id}`),
+}
+
 // --- Analytics ---
 export const analyticsApi = {
   getOverview: () => api.get('/analytics/overview'),

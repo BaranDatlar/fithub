@@ -69,6 +69,10 @@ async def client(mock_db, mock_redis, mock_kafka):
         patch("app.services.class_service.get_database", return_value=mock_db),
         patch("app.services.workout_service.get_database", return_value=mock_db),
         patch("app.services.analytics_service.get_database", return_value=mock_db),
+        patch(
+            "app.services.exercise_session_service.get_database",
+            return_value=mock_db,
+        ),
         patch("app.services.redis_service.get_redis", return_value=mock_redis),
         patch("app.services.kafka_service._producer", mock_kafka),
         # Patch lifespan connections

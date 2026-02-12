@@ -17,6 +17,11 @@ pydantic>=2.10.0
 pydantic-settings>=2.7.0
 email-validator>=2.2.0
 
+# AI / Computer Vision
+mediapipe>=0.10.14
+numpy>=1.26.0
+Pillow>=10.0.0
+
 # Logging
 structlog>=24.4.0
 
