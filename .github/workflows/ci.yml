@@ -18,12 +18,12 @@ jobs:
           python-version: "3.12"
 
       - name: Install ruff
-        run: pip install ruff
+        run: pip install ruff==0.9.10
 
-      - name: Run ruff check
+      - name: Ruff lint
         run: ruff check backend/app/
 
-      - name: Run ruff format check
+      - name: Ruff format
         run: ruff format --check backend/app/
 
   test:
@@ -36,15 +36,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: pip
-          cache-dependency-path: backend/requirements.txt
 
       - name: Install dependencies
         run: pip install -r backend/requirements.txt
 
-      - name: Run tests
+      - name: Run pytest
         working-directory: backend
-        run: pytest app/tests/ -v --tb=short
+        run: python -m pytest app/tests/ -v --tb=short
 
   build:
     name: Build Docker Images
